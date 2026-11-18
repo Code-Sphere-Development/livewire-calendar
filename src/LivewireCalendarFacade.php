@@ -1,11 +1,11 @@
 <?php
 
-namespace Omnia\LivewireCalendar;
+namespace CodeSphere\LivewireCalendar;
 
 use Illuminate\Support\Facades\Facade;
 
 /**
- * @see \Omnia\LivewireCalendar\Skeleton\SkeletonClass
+ * @see LivewireCalendar
  */
 class LivewireCalendarFacade extends Facade
 {

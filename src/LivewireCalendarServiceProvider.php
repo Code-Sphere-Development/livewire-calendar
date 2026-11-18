@@ -1,6 +1,6 @@
 <?php
 
-namespace Omnia\LivewireCalendar;
+namespace CodeSphere\LivewireCalendar;
 
 use Illuminate\Support\Facades\Blade;
 use Illuminate\Support\ServiceProvider;
@@ -13,7 +13,7 @@ class LivewireCalendarServiceProvider extends ServiceProvider
     public function boot()
     {
         $this->app->bind('livewire-calendar', function () {
-            return new LivewireCalendar();
+            return new LivewireCalendar;
         });
 
         $this->loadViewsFrom(__DIR__.'/../resources/views', 'livewire-calendar');

@@ -1,8 +1,8 @@
 <?php
 
-namespace Omnia\LivewireCalendar\Tests;
+namespace CodeSphere\LivewireCalendar\Tests;
 
-use Omnia\LivewireCalendar\LivewireCalendarServiceProvider;
+use CodeSphere\LivewireCalendar\LivewireCalendarServiceProvider;
 use Livewire\LivewireServiceProvider;
 use Orchestra\Testbench\TestCase as BaseCase;
 
@@ -18,6 +18,7 @@ class TestCase extends BaseCase
 
     protected function getEnvironmentSetUp($app)
     {
-        $app['config']->set('app.key', 'base64:Hupx3yAySikrM2/edkZQNQHslgDWYfiBfCuSThJ5SK8=');
+        // Zufaelliger Schluessel nur fuer die Testlaufzeit, Livewire braucht einen fuer Checksummen.
+        $app['config']->set('app.key', 'base64:'.base64_encode(random_bytes(32)));
     }
 }

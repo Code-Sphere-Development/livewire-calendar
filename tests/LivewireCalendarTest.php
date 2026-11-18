@@ -1,8 +1,8 @@
 <?php
 
-namespace Omnia\LivewireCalendar\Tests;
+namespace CodeSphere\LivewireCalendar\Tests;
 
-use Omnia\LivewireCalendar\LivewireCalendar;
+use CodeSphere\LivewireCalendar\LivewireCalendar;
 use Livewire\Livewire;
 
 class LivewireCalendarTest extends TestCase
@@ -31,7 +31,7 @@ class LivewireCalendarTest extends TestCase
         );
 
         $this->assertEquals(
-            today()->endOfMonth()->startOfDay()->addMonthNoOverflow(),
+            today()->startOfMonth()->addMonthNoOverflow()->endOfMonth()->startOfDay(),
             $component->get('endsAt')
         );
     }
@@ -48,7 +48,7 @@ class LivewireCalendarTest extends TestCase
         );
 
         $this->assertEquals(
-            today()->endOfMonth()->startOfDay()->subMonthNoOverflow(),
+            today()->startOfMonth()->subMonthNoOverflow()->endOfMonth()->startOfDay(),
             $component->get('endsAt')
         );
     }
