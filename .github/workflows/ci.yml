@@ -1,0 +1,99 @@
+name: CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+
+# Neue Pushes auf denselben Ref brechen laufende Jobs ab (nicht auf main).
+concurrency:
+  group: ci-${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: ${{ github.ref != 'refs/heads/main' }}
+
+permissions:
+  contents: read
+
+# Das Repo ist oeffentlich: ausschliesslich GitHub-gehostete Runner, niemals
+# self-hosted. Sonst wuerden Fork-PRs Code auf den Proxmox-Runnern ausfuehren.
+# Aus demselben Grund kein pull_request_target.
+
+jobs:
+  # ---------------------------------------------------------------------------
+  # 1. composer.json und Code-Style (Pint)
+  # ---------------------------------------------------------------------------
+  static:
+    name: Pint
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v7
+
+      - name: Setup PHP
+        uses: shivammathur/setup-php@v2
+        with:
+          php-version: '8.5'
+          coverage: none
+          tools: composer:v2
+
+      - name: Validate composer.json
+        run: composer validate --strict --no-check-lock
+
+      - name: Install Composer dependencies
+        run: composer update --prefer-dist --no-interaction --no-progress
+
+      - name: Run Pint
+        run: vendor/bin/pint --test
+
+  # ---------------------------------------------------------------------------
+  # 2. PHPUnit gegen die unterstuetzten PHP-, Laravel- und Livewire-Versionen
+  #    (kein composer.lock, jede Kombination wird frisch aufgeloest).
+  #    Volle Matrix PHP x Laravel mit Livewire 4, Livewire 3 an den Raendern.
+  # ---------------------------------------------------------------------------
+  tests:
+    name: Tests (PHP ${{ matrix.php }}, Laravel ${{ matrix.laravel }}, Livewire ${{ matrix.livewire }})
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        php: ['8.3', '8.4', '8.5']
+        laravel: ['12', '13']
+        livewire: ['4']
+        include:
+          - php: '8.3'
+            laravel: '12'
+            livewire: '3'
+          - php: '8.5'
+            laravel: '13'
+            livewire: '3'
+
+    steps:
+      - uses: actions/checkout@v7
+
+      - name: Setup PHP ${{ matrix.php }}
+        uses: shivammathur/setup-php@v2
+        with:
+          php-version: ${{ matrix.php }}
+          extensions: mbstring, dom, fileinfo, intl
+          coverage: none
+          tools: composer:v2
+
+      - name: Get Composer cache directory
+        id: composer-cache
+        run: echo "dir=$(composer config cache-files-dir)" >> "$GITHUB_OUTPUT"
+
+      - name: Cache Composer dependencies
+        uses: actions/cache@v6
+        with:
+          path: ${{ steps.composer-cache.outputs.dir }}
+          key: ${{ runner.os }}-php${{ matrix.php }}-l${{ matrix.laravel }}-lw${{ matrix.livewire }}-composer-${{ hashFiles('composer.json') }}
+          restore-keys: |
+            ${{ runner.os }}-php${{ matrix.php }}-l${{ matrix.laravel }}-lw${{ matrix.livewire }}-composer-
+
+      - name: Install Laravel ${{ matrix.laravel }} / Livewire ${{ matrix.livewire }}
+        run: |
+          composer require --dev --no-update --no-interaction "laravel/framework:^${{ matrix.laravel }}.0"
+          composer require --no-update --no-interaction "livewire/livewire:^${{ matrix.livewire }}.0"
+          composer update --prefer-dist --no-interaction --no-progress
+
+      - name: Run PHPUnit
+        run: vendor/bin/phpunit --colors=always
