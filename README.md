@@ -3,47 +3,69 @@
 This package allows you to build a Livewire monthly calendar grid to show events for each day. Events can be loaded
 from within the component and will be presented on each day depending on the date of the event.
 
-Special thanks to asantibanez/livewire-calendar as this originally was a fork of that package. We are using this new package in one of our large projects so we will be actively maintaining.
+## Origin
+
+`code-sphere/livewire-calendar` is a maintained fork of
+[omnia-digital/livewire-calendar](https://github.com/omnia-digital/livewire-calendar) (version 4.1.0, MIT),
+which itself started as a fork of [asantibanez/livewire-calendar](https://github.com/asantibanez/livewire-calendar).
+All credit for the original component goes to its authors (see [Credits](#credits)).
+The fork exists to support Laravel 13 and to keep the package maintained for the Code-Sphere apps.
+
+Differences to omnia-digital/livewire-calendar 4.1.0:
+
+- PHP namespace `CodeSphere\LivewireCalendar` instead of `Omnia\LivewireCalendar`.
+- Requires PHP 8.3+, Laravel 12 or 13 and Livewire 3 or 4. Livewire 2 support was removed.
+- Bugfix: navigating between months no longer drifts `endsAt` away from the last day of the month
+  (e.g. March → February → January ended on January 28).
+
+Everything else is unchanged: the `LivewireCalendar` class, its public methods and properties,
+the `@livewireCalendarScripts` directive, the `livewire-calendar` view namespace and the
+`livewire-calendar` publish tag.
 
 ## Preview
 
-![preview](https://github.com/omnia-digital/livewire-calendar/raw/main/preview.gif)
+![preview](preview.gif)
 
 ## Installation
 
-You can install the package via composer:
+The package is not on Packagist. Add the repository to your app's `composer.json`:
+
+```json
+"repositories": [
+    {
+        "type": "vcs",
+        "url": "https://github.com/Code-Sphere-Development/livewire-calendar"
+    }
+]
+```
+
+Then require it:
 
 ```bash
-composer require omnia-digital/livewire-calendar
+composer require code-sphere/livewire-calendar:^1.0
 ```
+
+### Migrating from omnia-digital/livewire-calendar
+
+1. `composer remove omnia-digital/livewire-calendar`
+2. Add the repository and require `code-sphere/livewire-calendar` as shown above.
+3. Replace `Omnia\LivewireCalendar\` with `CodeSphere\LivewireCalendar\` in your imports.
+
+Published views in `resources/views/vendor/livewire-calendar` keep working without changes.
 
 ## Compatibility
 
-This package supports a wide range of PHP, Laravel, and Livewire versions:
-
-| Package Version | PHP       | Laravel   | Livewire  |
-|----------------|-----------|-----------|-----------|
-| 4.1.x          | 7.4 - 8.4 | 6 - 12    | 2, 3, 4   |
-| 3.2.x          | 7.4 - 8.3 | 6 - 12    | 2, 3      |
-| 3.1.x          | 7.4 - 8.3 | 6 - 11    | 2, 3      |
-| 3.0.x          | 7.4 - 8.2 | 6 - 10    | 2, 3      |
-| 2.2.x          | 7.4 - 8.2 | 6 - 10    | 2         |
-
-**Recommended installation:**
-
-```bash
-composer require omnia-digital/livewire-calendar:^4.1
-```
-
-For upgrade guides, see [UPGRADE.md](UPGRADE.md).
+| Package Version | PHP       | Laravel | Livewire |
+|-----------------|-----------|---------|----------|
+| 1.x             | 8.3 - 8.5 | 12, 13  | 3, 4     |
 
 ## Requirements
 
-This package uses `livewire/livewire` (https://laravel-livewire.com/) under the hood.
+This package uses [Livewire](https://livewire.laravel.com) under the hood.
 
-It also uses TailwindCSS (https://tailwindcss.com/) for base styling.
+It also uses [Tailwind CSS](https://tailwindcss.com) for base styling.
 
-Please make sure you include both of this dependencies before using this component.
+Please make sure you include both of these dependencies before using this component.
 
 ## Usage
 
@@ -61,6 +83,8 @@ extend from `LivewireCalendar`.
 - You'll have a class similar to this snippet.
 
 ``` php
+use CodeSphere\LivewireCalendar\LivewireCalendar;
+
 class AppointmentsCalendar extends LivewireCalendar
 {
     //
@@ -108,7 +132,7 @@ to filter your events.
 - `startsAt`: starting date of month
 - `endsAt`: ending date of month
 - `gridStartsAt`: starting date of calendar grid. Can be a date from the previous month.
-- `endingStartsAt`: ending date of calendar grid. Can be a date from the next month.
+- `gridEndsAt`: ending date of calendar grid. Can be a date from the next month.
 
 Example
 
@@ -282,6 +306,7 @@ rendering the component
 
 ``` bash
 composer test
+composer lint
 ```
 
 ### Changelog
@@ -290,18 +315,22 @@ Please see [CHANGELOG](CHANGELOG.md) for more information what has changed recen
 
 ## Contributing
 
-Please see [CONTRIBUTING](CONTRIBUTING.md) for details.
+Issues and pull requests are welcome at
+[Code-Sphere-Development/livewire-calendar](https://github.com/Code-Sphere-Development/livewire-calendar).
+Please add tests for changes in behaviour.
 
 ### Security
 
-If you discover any security related issues, please email us at info@omniadigital.io instead of using the issue tracker.
+If you discover a security related issue, please report it privately via GitHub
+(Security → Report a vulnerability) instead of using the issue tracker.
 
 ## Credits
 
 - [Osei Quashie](https://github.com/Osimba)
 - [Josh Torres](https://github.com/joshtorres)
 - [Andrés Santibáñez](https://github.com/asantibanez)
-- [All Contributors](../../contributors)
+- [All contributors of the original package](https://github.com/omnia-digital/livewire-calendar/graphs/contributors)
+- Maintained by [Code-Sphere-Development](https://github.com/Code-Sphere-Development)
 
 ## License
 
